@@ -1,0 +1,86 @@
+name: Replicação
+
+# O pacote roda inteiro, do bruto ao resultado, num ambiente limpo. É isto que
+# dá sentido ao renv.lock: as versões travadas são restauradas e testadas a cada
+# push, sem impor uma biblioteca local a quem só quer rodar os scripts.
+#
+# O pipeline não precisa de checagem externa: `01-build-data.R` e
+# `02-article-fflch.R` interrompem a execução se os números se afastarem dos
+# publicados, então basta o job falhar.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Toda primeira segunda-feira do mês, 09:00 UTC. Um pacote de replicação
+    # apodrece em silêncio; isto avisa antes que um leitor descubra.
+    - cron: "0 9 1-7 * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replicacao:
+    name: Pipeline completo
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: renv
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-renv@v2
+
+      - name: Conferir os arquivos de dados
+        run: Rscript tools/make-checksums.R --check
+
+      - name: Rodar o pipeline
+        run: Rscript run_all.R
+
+      - name: Conferir que o codebook está sincronizado
+        run: |
+          Rscript tools/make-codebook.R
+          git diff --exit-code -- CODEBOOK.md
+
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: outputs
+          path: outputs/
+          retention-days: 14
+
+  documentos:
+    name: Artigo e relatório
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: renv
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-renv@v2
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          tinytex: true
+
+      - name: Renderizar
+        run: quarto render
+
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: documentos
+          path: docs/
+          retention-days: 14

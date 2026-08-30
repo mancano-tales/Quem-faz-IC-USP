@@ -1,0 +1,5 @@
+# MD5 dos arquivos de dados deste pacote de replicacao.
+# Confira com: Rscript tools/make-checksums.R --check
+63e9865e5a997f0ad1ff6d75c2d33585 data-raw/sic-usp-243654-ingressantes.xlsx
+43db07bbfd6404fb8d5a6d54b51c5ec9 data-raw/sic-usp-243681-perfil-ic.xlsx
+cb80aab8f5dab965e6095a0d20763483 data/ic_usp.parquet
