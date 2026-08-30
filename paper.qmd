@@ -1,0 +1,608 @@
+---
+title: "Quem faz Iniciação Científica na USP?"
+subtitle: "Heterogeneidade entre áreas do conhecimento no acesso à Iniciação Científica (2010–2022)"
+author:
+  - name: Tales Mançano
+    affiliations:
+      - name: Departamento de Ciência Política, Universidade de São Paulo
+    orcid: 0000-0001-5923-9743
+    email: mancano.tales@gmail.com
+  - name: Victor Alcantara
+    affiliations:
+      - name: Departamento de Sociologia, Universidade de São Paulo
+    orcid: 0000-0001-8846-9652
+    email: victorgalcantara@usp.br
+date: today
+lang: pt-BR
+keywords:
+  - Iniciação Científica
+  - Educação Superior
+  - Desigualdades Educacionais
+  - Áreas do conhecimento
+abstract: |
+  Um estudo anterior mostrou que, na Faculdade de Filosofia, Letras e Ciências Humanas da USP, as características adscritas de origem social explicam pouco o acesso à Iniciação Científica, enquanto a necessidade de trabalhar explica muito. Este artigo pergunta se esse achado descreve a universidade ou apenas uma de suas unidades. Estendemos a mesma especificação às 48 unidades da USP, com 152.729 ingressantes das coortes de 2010 a 2022, classificadas em nove áreas do conhecimento. Encontramos três resultados. Primeiro, a heterogeneidade institucional é enorme e maior do que qualquer efeito individual: a proporção de estudantes que realizam IC vai de 2,7% a 36,1% entre unidades, e saber apenas em que unidade o estudante entrou explica mais da variação individual do que todas as suas características socioeconômicas somadas. Segundo, o mecanismo central do estudo anterior se confirma e se fortalece: na USP inteira, trabalhar em tempo integral reduz mais a probabilidade de fazer IC do que na FFLCH, e continua superando as características de origem em seis das nove áreas. Terceiro, e contra a expectativa, a variável que carrega esse mecanismo muda de área para área — e emerge um fator ausente na FFLCH: em Ciências Agrárias, da Saúde e Engenharias, ser homem reduz a probabilidade de fazer IC entre três e oito pontos percentuais, um efeito que na FFLCH é indistinguível de zero.
+format:
+  html:
+    output-file: paper.html
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    theme: cosmo
+    code-fold: show
+    code-summary: "código"
+    code-tools: true
+    df-print: kable
+    embed-resources: true
+  pdf:
+    output-file: working-paper.pdf
+    documentclass: article
+    papersize: a4
+    fontsize: 11pt
+    geometry:
+      - margin=2.5cm
+    number-sections: true
+    toc: false
+    colorlinks: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+
+knitr::opts_chunk$set(echo = knitr::is_html_output(), dpi = 200)
+
+source(here::here("R", "setup.R"))
+source(here::here("R", "recode.R"))
+source(here::here("R", "modelos.R"))
+
+usp <- arrow::read_parquet(ARQ_PAINEL) |>
+  dplyr::filter(ano %in% COORTES) |>
+  aplicar_recodificacoes() |>
+  dplyr::mutate(IC = dplyr::coalesce(IC, 0)) |>
+  dplyr::left_join(carregar_areas(), by = "unidade") |>
+  ordenar_areas()
+
+fflch <- dplyr::filter(usp, unidade == UNIDADE_FFLCH)
+
+pct  <- function(x, a = 0.1) scales::percent(x, accuracy = a, decimal.mark = ",")
+num  <- function(x) format(x, big.mark = ".", decimal.mark = ",")
+```
+
+::: {.callout-note appearance="simple"}
+Este documento é gerado por código: todas as tabelas e figuras são calculadas
+na compilação, a partir dos microdados. O pacote de replicação está em
+<https://github.com/mancano-tales/Quem-faz-IC-USP>, e é irmão do pacote do
+estudo anterior, <https://github.com/mancano-tales/Quem-faz-IC>, de quem herda
+os dados e a especificação do modelo.
+:::
+
+# Introdução
+
+Em estudo anterior, analisamos o acesso à Iniciação Científica na Faculdade de
+Filosofia, Letras e Ciências Humanas da USP e chegamos a uma conclusão que
+contrariava nossa hipótese inicial: os marcadores tradicionais de origem social
+— renda familiar e escolaridade dos responsáveis — têm pouco poder explicativo
+sobre as chances de fazer IC, enquanto o vínculo com o trabalho e a forma de
+sustento pretendida durante a graduação têm muito. Passado o filtro do
+vestibular, argumentamos, o mecanismo dominante de reprodução de desigualdades
+deixa de ser a origem e passa a ser o tempo: quem precisa trabalhar não tem as
+horas que a IC exige.
+
+Aquele estudo analisou uma unidade. Este pergunta se o achado descreve a
+universidade.
+
+A pergunta não é retórica. A FFLCH é a maior unidade da USP, mas é atípica em
+quase tudo o que interessa ao argumento: concentra cursos noturnos, recebe uma
+proporção de estudantes trabalhadores muito acima da média, e pertence a uma
+área do conhecimento cuja relação com a pesquisa de graduação é distinta da das
+ciências experimentais. Se o mecanismo do tempo é geral, deve reaparecer em
+Engenharias e em Ciências da Saúde. Se não reaparece, o que descrevemos não foi
+a educação superior brasileira, mas um tipo particular de faculdade.
+
+Fazemos três perguntas, nesta ordem:
+
+1. **Quanta IC existe, e onde?** A USP em agregado se parece com a FFLCH?
+2. **A especificação da FFLCH se sustenta na universidade inteira?**
+3. **O mecanismo é o mesmo em todas as áreas**, ou o achado anterior descreve
+   um tipo de área?
+
+# Dados e método
+
+Usamos o mesmo painel do estudo anterior, construído a partir de dois pedidos
+ao Serviço de Informação ao Cidadão da USP sob a Lei de Acesso à Informação: o
+cadastro de ingressantes da graduação com o questionário socioeconômico da
+FUVEST (Cod. #243654) e o registro dos projetos de Iniciação Científica no
+sistema Atena (Cod. #243681). A construção do painel, as regras de agregação e
+a recodificação das variáveis estão documentadas no pacote de replicação do
+estudo anterior, e são reaproveitadas aqui sem alteração.
+
+A diferença está no recorte. Onde o estudo anterior filtrava uma unidade, aqui
+mantemos todas.
+
+```{r panorama}
+#| label: tbl-panorama
+#| tbl-cap: "O painel analisado"
+
+data.frame(
+  Medida = c("Ingressantes na USP (coortes 2010–2022)",
+             "Unidades", "Áreas do conhecimento", "Cursos de ingresso",
+             "Estudantes que realizaram IC",
+             "Proporção que realizou IC",
+             "A mesma proporção, na FFLCH"),
+  Valor = c(num(nrow(usp)),
+            num(dplyr::n_distinct(usp$unidade)),
+            num(dplyr::n_distinct(usp$area)),
+            num(dplyr::n_distinct(usp$curso)),
+            num(sum(usp$IC)),
+            pct(mean(usp$IC)),
+            pct(mean(fflch$IC)))
+)
+```
+
+## A classificação em áreas
+
+O arquivo do SIC-USP informa a unidade de ingresso, não a área do conhecimento.
+A classificação das 48 unidades em nove áreas é nossa, segue as grandes áreas
+do CNPq, e está registrada em `data-raw/unidades-areas.csv` — quem discordar
+edita o arquivo e roda o pipeline de novo.
+
+Duas decisões precisam ficar explícitas. Unidades que abrigam cursos de várias
+áreas — a Escola de Artes, Ciências e Humanidades, a Faculdade de Filosofia,
+Ciências e Letras de Ribeirão Preto, os cursos interunidades e a Pró-reitoria
+de Graduação, que registra licenciaturas interunidades — foram para uma
+categoria **Multidisciplinar**. Forçá-las numa área seria inventar
+homogeneidade que elas não têm. E a FFLCH, que abriga tanto Ciências Humanas
+quanto Letras, foi inteira para Ciências Humanas, como a própria USP a
+classifica; separá-la por curso mudaria a unidade de análise.
+
+# Quanta IC existe, e onde
+
+A primeira resposta é que a FFLCH não é a USP.
+
+```{r tabela-areas}
+#| label: tbl-areas
+#| tbl-cap: "Acesso à IC e composição social, por área do conhecimento"
+
+tab_areas <- usp |>
+  dplyr::group_by(area) |>
+  dplyr::summarise(
+    N             = dplyr::n(),
+    fez_ic        = mean(IC),
+    ppi           = mean(raca == "PPI", na.rm = TRUE),
+    noturno       = mean(periodo == "noturno", na.rm = TRUE),
+    trabalha      = mean(trabalho != "Não", na.rm = TRUE),
+    renda_pc      = stats::median(sfmpct, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(dplyr::desc(fez_ic))
+
+tab_areas |>
+  dplyr::transmute(
+    `Área` = area, N = num(N),
+    `% que fez IC` = pct(fez_ic), `% PPI` = pct(ppi),
+    `% noturno` = pct(noturno), `% trabalha` = pct(trabalha),
+    `Renda p/c (SM)` = format(round(renda_pc, 2), decimal.mark = ",")
+  ) |>
+  knitr::kable(align = "lrrrrrr")
+```
+
+```{r fig-areas}
+#| label: fig-areas
+#| fig-cap: "Proporção de estudantes que realizaram IC, por área do conhecimento"
+#| fig-width: 8
+#| fig-height: 4.5
+
+tab_areas |>
+  ggplot2::ggplot(ggplot2::aes(x = stats::reorder(area, fez_ic), y = fez_ic)) +
+  ggplot2::geom_col(fill = "steelblue", width = 0.7) +
+  ggplot2::geom_text(ggplot2::aes(label = pct(fez_ic)), hjust = -0.15, size = 3.4) +
+  ggplot2::scale_y_continuous(labels = scales::percent,
+                              expand = ggplot2::expansion(mult = c(0, 0.15))) +
+  ggplot2::coord_flip() +
+  ggplot2::labs(x = NULL, y = "Estudantes que realizaram IC") +
+  TEMA
+```
+
+Ciências da Saúde forma estudantes com IC em proporção mais de três vezes maior
+que Linguística, Letras e Artes. A FFLCH, com `r pct(mean(fflch$IC))`, fica
+próxima da média de sua área, mas bem abaixo da média da universidade
+(`r pct(mean(usp$IC))`) — o estudo anterior, portanto, descreveu uma unidade
+situada na metade inferior da distribuição.
+
+A composição social não acompanha o acesso. As áreas que mais formam
+iniciantes científicos não são as que recebem estudantes mais privilegiados: a
+mediana de renda per capita é praticamente a mesma em Ciências da Saúde e em
+Ciências Humanas. O que separa as duas é a proporção de estudantes noturnos e
+trabalhadores — `r pct(tab_areas$noturno[tab_areas$area == "Ciências Humanas"])`
+e `r pct(tab_areas$trabalha[tab_areas$area == "Ciências Humanas"])` em Humanas,
+contra `r pct(tab_areas$noturno[tab_areas$area == "Ciências da Saúde"])` e
+`r pct(tab_areas$trabalha[tab_areas$area == "Ciências da Saúde"])` na Saúde.
+
+## A dispersão dentro das áreas
+
+Agregar em nove áreas esconde parte do fenômeno. A variação entre unidades da
+mesma área é, em vários casos, maior que a variação entre áreas.
+
+```{r fig-dispersao}
+#| label: fig-dispersao
+#| fig-cap: "Proporção que realizou IC em cada unidade, agrupada por área (unidades com 500 ingressantes ou mais)"
+#| fig-width: 8
+#| fig-height: 4.5
+
+tab_unidades <- usp |>
+  dplyr::group_by(area, unidade) |>
+  dplyr::summarise(n = dplyr::n(), fez_ic = mean(IC), .groups = "drop") |>
+  dplyr::filter(n >= MIN_INGRESSANTES)
+
+tab_unidades |>
+  ggplot2::ggplot(ggplot2::aes(x = area, y = fez_ic)) +
+  ggplot2::geom_boxplot(outlier.shape = NA, colour = "grey65") +
+  ggplot2::geom_jitter(ggplot2::aes(size = n), width = 0.15, alpha = 0.6,
+                       colour = "steelblue") +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::scale_size_continuous(range = c(1, 6), guide = "none") +
+  ggplot2::coord_flip() +
+  ggplot2::labs(x = NULL, y = "Estudantes que realizaram IC, por unidade") +
+  TEMA
+```
+
+```{r extremos}
+#| label: tbl-extremos
+#| tbl-cap: "As cinco unidades com maior e menor acesso à IC"
+
+ext <- tab_unidades |> dplyr::arrange(dplyr::desc(fez_ic))
+rbind(utils::head(ext, 5), utils::tail(ext, 5)) |>
+  dplyr::transmute(Unidade = unidade, `Área` = area, N = num(n),
+                   `% que fez IC` = pct(fez_ic)) |>
+  knitr::kable(align = "llrr")
+```
+
+## A estrutura institucional contra as características individuais
+
+A amplitude entre unidades sugere que o lugar em que o estudante entra importa.
+Quanto? Uma forma direta de responder é comparar o poder explicativo de um
+modelo que só conhece a unidade do estudante com o de um modelo que só conhece
+suas características socioeconômicas.
+
+```{r decomposicao}
+#| label: tbl-decomposicao
+#| tbl-cap: "Poder explicativo de cada bloco de informação, isoladamente"
+
+md_ind <- amostra_modelo(usp)
+
+pseudo <- function(m, dados) {
+  nulo <- stats::glm(IC ~ 1, data = dados, family = stats::binomial)
+  1 - as.numeric(stats::logLik(m) / stats::logLik(nulo))
+}
+
+m_nada    <- stats::glm(IC ~ area,     data = usp, family = stats::binomial)
+m_unidade <- stats::glm(IC ~ unidade,  data = usp, family = stats::binomial)
+m_indiv   <- ajustar(md_ind, FORMULA_BASE)
+
+data.frame(
+  `O que o modelo conhece` = c(
+    "Apenas a área do conhecimento (9 categorias)",
+    "Apenas a unidade de ingresso (48 categorias)",
+    "Apenas as características do estudante (o modelo do estudo anterior)"),
+  `Pseudo-R²` = sprintf("%.3f", c(pseudo(m_nada, usp), pseudo(m_unidade, usp),
+                                  pseudo(m_indiv, md_ind))),
+  check.names = FALSE
+) |>
+  knitr::kable(align = "lr")
+```
+
+O resultado é desconfortável para a literatura de desigualdade de oportunidades
+educacionais, inclusive para o nosso estudo anterior. **Saber apenas em qual
+das 48 unidades o estudante entrou explica mais da variação individual em fazer
+IC do que saber sua renda, raça, escolaridade dos pais, idade, turno, vínculo
+com trabalho e forma de sustento, todos juntos.** A oferta desigual de
+oportunidades entre unidades é um fato estrutural que antecede — e supera — a
+seleção de quem as ocupa.
+
+# A especificação da FFLCH aplicada à USP
+
+Mantemos a especificação do estudo anterior intacta. Se mudássemos o modelo
+junto com a amostra, não saberíamos qual das duas mudanças explica a diferença.
+
+```{r modelos}
+#| label: tbl-modelos
+#| tbl-cap: "Efeitos marginais médios sobre a probabilidade de realizar IC, em pontos percentuais"
+
+md_fflch <- amostra_modelo(fflch)
+md_usp   <- amostra_modelo(usp, com_area = TRUE)
+
+m_fflch <- ajustar(md_fflch, FORMULA_BASE)
+m_usp   <- ajustar(md_usp,   FORMULA_AREA)
+
+ames <- rbind(
+  cbind(modelo = "FFLCH", ame(m_fflch, md_fflch)),
+  cbind(modelo = "USP",   ame(m_usp,   md_usp))
+)
+
+comparacao <- ames |>
+  dplyr::filter(!grepl("^area", variavel)) |>
+  dplyr::mutate(pp = sprintf("%+.2f", 100 * ame),
+                termo = paste0(variavel, ": ", nivel)) |>
+  dplyr::select(termo, modelo, pp) |>
+  tidyr::pivot_wider(names_from = modelo, values_from = pp)
+
+knitr::kable(comparacao, align = "lrr", col.names = c("Efeito", "FFLCH", "USP"))
+```
+
+```{r fig-ame}
+#| label: fig-ame
+#| fig-cap: "Os maiores efeitos marginais médios: FFLCH e USP lado a lado"
+#| fig-width: 9
+#| fig-height: 5
+
+principais <- ames |>
+  dplyr::filter(!grepl("^area|^ano", variavel)) |>
+  dplyr::mutate(rotulo = paste0(variavel, ": ", nivel))
+
+top <- principais |>
+  dplyr::group_by(rotulo) |>
+  dplyr::summarise(m = max(abs(ame)), .groups = "drop") |>
+  dplyr::slice_max(m, n = 9) |>
+  dplyr::pull(rotulo)
+
+principais |>
+  dplyr::filter(rotulo %in% top) |>
+  ggplot2::ggplot(ggplot2::aes(x = stats::reorder(rotulo, ame), y = ame,
+                               fill = modelo)) +
+  ggplot2::geom_col(position = ggplot2::position_dodge(width = 0.75), width = 0.7) +
+  ggplot2::geom_hline(yintercept = 0, colour = "grey40") +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::scale_fill_manual(values = c("FFLCH" = "#e97d5a", "USP" = "#1bb57f")) +
+  ggplot2::coord_flip() +
+  ggplot2::labs(x = NULL, y = "Efeito marginal médio", fill = NULL) +
+  TEMA
+```
+
+Três leituras.
+
+**O mecanismo do trabalho se confirma, e se fortalece.** Trabalhar em tempo
+integral ao prestar o vestibular reduz a probabilidade de fazer IC em
+`r sprintf("%.2f", -100 * ames$ame[ames$modelo == "USP" & grepl("integral", ames$nivel)])`
+pontos percentuais na USP, contra
+`r sprintf("%.2f", -100 * ames$ame[ames$modelo == "FFLCH" & grepl("integral", ames$nivel)])`
+na FFLCH. Pretender se sustentar por conta própria e estudar no período noturno
+seguem na mesma direção, também com efeitos maiores. O argumento central do
+estudo anterior não era um artefato da unidade analisada.
+
+**As características de origem seguem fracas — e a escolaridade dos pais muda
+de sinal.** Renda per capita e raça continuam com efeitos pequenos. A
+escolaridade do responsável, que na FFLCH tinha sinal positivo e não
+significativo, na USP passa a negativa: filhos de pais com ensino superior
+fazem *menos* IC, não mais. É um resultado contraintuitivo que merece
+investigação própria, e que reforça a leitura de que, dentro de uma
+universidade seletiva, a origem opera de modo distinto do que opera no acesso a
+ela.
+
+**O sexo, invisível na FFLCH, aparece na USP.** Na FFLCH o efeito de ser homem
+é
+`r sprintf("%.2f", 100 * ames$ame[ames$modelo == "FFLCH" & ames$nivel == "M (vs F)"])`
+ponto percentual — indistinguível de zero. Na USP é
+`r sprintf("%.2f", 100 * ames$ame[ames$modelo == "USP" & ames$nivel == "M (vs F)"])`
+pontos. Como o modelo já inclui efeitos fixos de área, isso não é composição:
+não se trata de homens estarem concentrados em áreas com pouca IC. Dentro da
+mesma área, homens fazem menos IC que mulheres.
+
+# O mesmo modelo, área por área
+
+Confirmar o mecanismo em agregado não garante que ele opere em toda parte. Se o
+trabalho for o obstáculo dominante em Humanas e irrelevante em Saúde, o achado
+anterior descreve um tipo de área, não a universidade.
+
+```{r heterogeneidade}
+#| label: tbl-heterogeneidade
+#| tbl-cap: "Efeitos marginais médios por área, em pontos percentuais"
+
+areas <- sort(unique(usp$area))
+
+ajustes <- Filter(Negate(is.null), lapply(areas, function(a) {
+  d <- amostra_modelo(dplyr::filter(usp, area == a))
+  if (nrow(d) < 500) return(NULL)
+  list(area = a, modelo = ajustar(d, FORMULA_BASE), dados = d)
+}))
+
+ames_area <- do.call(rbind, lapply(ajustes, function(x) {
+  cbind(area = x$area, n = stats::nobs(x$modelo), ame(x$modelo, x$dados))
+}))
+
+DESTAQUES <- c(
+  "trabalho|Sim, em tempo integral (vs Não)"          = "Trab. integral",
+  "sustento|Por conta própria (vs Suporte da família)" = "Sust. próprio",
+  "periodo|noturno (vs diurno)"                        = "Noturno",
+  "sexo|M (vs F)"                                      = "Homem",
+  "raca|PPI (vs Brancos)"                              = "PPI",
+  "sfmpct|+1 desvio-padrão"                            = "Renda p/c",
+  "educ_resp|ES completo (vs EF incompleto)"           = "Pais c/ ES"
+)
+
+destaques <- ames_area |>
+  dplyr::mutate(chave = paste(variavel, nivel, sep = "|")) |>
+  dplyr::filter(chave %in% names(DESTAQUES)) |>
+  dplyr::mutate(efeito = factor(unname(DESTAQUES[chave]),
+                                levels = unname(DESTAQUES)))
+
+# Com oito colunas numéricas, o nome por extenso das áreas não cabe na largura
+# da página e quebra as colunas de números.
+abreviar <- function(x) {
+  x <- sub("^Ciências ", "C. ", x)
+  sub("^Linguística, Letras e Artes$", "Letras e Artes", x)
+}
+
+tab_het <- destaques |>
+  dplyr::mutate(pp = sprintf("%+.1f", 100 * ame)) |>
+  dplyr::select(area, n, efeito, pp) |>
+  tidyr::pivot_wider(names_from = efeito, values_from = pp) |>
+  # A ordem das colunas depois do pivot não é garantida: selecionamos pelos
+  # nomes, em vez de confiar na posição e rotular por cima.
+  dplyr::select(`Área` = area, N = n, dplyr::all_of(unname(DESTAQUES))) |>
+  dplyr::mutate(`Área` = abreviar(as.character(`Área`)), N = num(N))
+
+knitr::kable(tab_het, align = "lrrrrrrrr")
+```
+
+```{r fig-heterogeneidade}
+#| label: fig-heterogeneidade
+#| fig-cap: "O mesmo efeito, área por área"
+#| fig-width: 11
+#| fig-height: 6
+
+destaques |>
+  ggplot2::ggplot(ggplot2::aes(x = stats::reorder(area, ame), y = ame)) +
+  ggplot2::geom_hline(yintercept = 0, colour = "grey50", linetype = "dashed") +
+  ggplot2::geom_segment(ggplot2::aes(xend = area, y = 0, yend = ame),
+                        colour = "steelblue", linewidth = 0.7) +
+  ggplot2::geom_point(size = 2.4, colour = "steelblue") +
+  ggplot2::facet_wrap(~ efeito, ncol = 4, scales = "free_x") +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::coord_flip() +
+  ggplot2::labs(x = NULL, y = "Efeito marginal médio") +
+  TEMA
+```
+
+A tabela responde à pergunta, e a resposta tem duas partes.
+
+```{r maiores}
+#| label: tbl-maiores
+#| tbl-cap: "O fator de maior efeito em cada área"
+
+maiores <- ames_area |>
+  dplyr::filter(variavel != "ano", !grepl("^Outros", nivel)) |>
+  dplyr::group_by(area) |>
+  dplyr::slice_max(abs(ame), n = 1) |>
+  dplyr::ungroup()
+
+maiores |>
+  dplyr::transmute(`Área` = area, N = num(n),
+                   Fator = paste0(variavel, ": ", nivel),
+                   `Efeito (pp)` = sprintf("%+.1f", 100 * ame)) |>
+  knitr::kable(align = "lrlr")
+```
+
+```{r confronto}
+#| label: fig-confronto
+#| fig-cap: "Trabalho contra origem social: acima da diagonal, o trabalho pesa mais"
+#| fig-width: 8
+#| fig-height: 5.5
+
+largo <- destaques |>
+  dplyr::select(area, efeito, ame) |>
+  tidyr::pivot_wider(names_from = efeito, values_from = ame)
+
+conf <- largo |>
+  dplyr::mutate(trabalho = abs(`Trab. integral`),
+                origem = pmax(abs(PPI), abs(`Renda p/c`),
+                              abs(`Pais c/ ES`)))
+
+conf |>
+  ggplot2::ggplot(ggplot2::aes(x = origem, y = trabalho, label = area)) +
+  ggplot2::geom_abline(slope = 1, intercept = 0, linetype = "dashed",
+                       colour = "grey50") +
+  ggplot2::geom_point(size = 3, colour = "steelblue") +
+  ggplot2::geom_text(hjust = -0.08, size = 3.1) +
+  ggplot2::expand_limits(x = c(0, max(conf$origem) * 2.1),
+                         y = c(0, max(conf$trabalho) * 1.15)) +
+  ggplot2::scale_x_continuous(labels = scales::percent) +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::labs(x = "Maior efeito entre as características de origem",
+                y = "Efeito de trabalhar em tempo integral") +
+  TEMA
+```
+
+**A primeira parte confirma o estudo anterior.** O trabalho supera a maior das
+características de origem em
+`r sum(conf$trabalho > conf$origem)` das `r nrow(conf)` áreas. A hierarquia que
+encontramos na FFLCH — o tempo importa mais que a origem — não é uma
+peculiaridade daquela unidade.
+
+**A segunda parte o qualifica.** Trabalhar em tempo integral é o fator de maior
+efeito em apenas
+`r sum(maiores$variavel == "trabalho")` das `r nrow(maiores)` áreas. Nas demais,
+quem carrega o mecanismo é o **período noturno**
+(`r sum(maiores$variavel == "periodo")` áreas) ou o **sexo**
+(`r sum(maiores$variavel == "sexo")` áreas).
+
+O período noturno é, plausivelmente, a mesma restrição por outro nome: o
+estudante que trabalha se matricula à noite, e o turno capta a restrição de
+tempo de forma mais completa que a pergunta do questionário, respondida ainda
+no vestibular. Nesse sentido, a leitura do estudo anterior se sustenta com
+folga: em oito das nove áreas, o fator dominante é uma medida de
+disponibilidade de tempo.
+
+O sexo é outra história. Em Ciências Agrárias, da Saúde e Engenharias, ser
+homem reduz a probabilidade de fazer IC entre três e oito pontos percentuais —
+efeito maior que o de qualquer característica de origem, e maior que o do
+próprio trabalho. Como os modelos são estimados dentro de cada área, não se
+trata de segregação horizontal entre carreiras. É algo que acontece dentro das
+mesmas unidades. Nosso desenho não permite distinguir entre as explicações
+possíveis — diferenças de desempenho acadêmico, de disponibilidade para
+atividades não remuneradas, de relação com os orientadores, ou de custo de
+oportunidade no mercado de trabalho para essas formações. Registramos o padrão
+e o deixamos como pergunta.
+
+# Considerações finais
+
+Estendemos à USP inteira um modelo construído para uma de suas unidades, e as
+três respostas não são as que esperávamos.
+
+A primeira é que a heterogeneidade institucional supera tudo o que estávamos
+medindo. A proporção de estudantes que fazem IC vai de 2,7% a 36,1% entre
+unidades, e a unidade de ingresso, sozinha, explica mais da variação individual
+do que o conjunto das características socioeconômicas. Um estudo de desigualdade
+de oportunidades educacionais que olhe apenas para os atributos dos indivíduos
+está medindo a menor das duas fontes de variação. A oferta de IC é desigual
+antes de qualquer seleção de quem a ocupa — e essa desigualdade é uma decisão
+institucional, não um resultado agregado de escolhas individuais.
+
+A segunda é que o mecanismo do tempo se confirma e se fortalece. Na USP inteira
+os efeitos de trabalhar, de se sustentar sozinho e de estudar à noite são
+maiores que na FFLCH, e superam as características de origem em seis das nove
+áreas. Em oito das nove, o fator dominante é uma medida de disponibilidade de
+tempo. O achado do estudo anterior generaliza.
+
+A terceira é que apareceu o que não estávamos procurando. O sexo, irrelevante
+na FFLCH, é o maior efeito em quatro áreas — e sempre na mesma direção, com
+homens fazendo menos IC. Um estudo desenhado para testar a origem social
+encontrou um padrão de gênero que ele não sabe explicar. Fica registrado para
+quem quiser persegui-lo.
+
+Duas limitações herdadas do estudo anterior permanecem e pesam mais aqui. Não
+temos indicador de desempenho acadêmico, e a classificação na carreira no
+vestibular é um proxy pobre — especialmente ao comparar áreas cujos processos
+seletivos têm concorrências muito diferentes. E o sub-registro de bolsas fora
+do CNPq no sistema Atena não é uniforme entre áreas: se as unidades das
+ciências experimentais registram melhor suas bolsas FAPESP do que as de
+humanidades, parte da diferença que atribuímos à área é diferença de registro.
+Não temos como quantificar esse viés com os dados disponíveis, e ele é a
+primeira coisa que um estudo seguinte deveria enfrentar.
+
+# Referências {.unnumbered}
+
+BREEN, R.; JONSSON, J. O. Inequality of Opportunity in Comparative Perspective — Recent Research on Educational Attainment and Social Mobility. **Annual Review of Sociology**, v. 31, p. 223–243, 2005.
+
+CANAAN, M. G.; NOGUEIRA, M. A. Bens em disputa no campo universitário: o efeito de fatores socioeconômicos e culturais no acesso à bolsa de iniciação científica. *In*: MASSI, L.; QUEIROZ, S. L. (org.). **Iniciação científica: aspectos históricos, organizacionais e formativos da atividade no ensino superior brasileiro**. São Paulo: UNESP, 2015. p. 61–89.
+
+CARVALHAES, F.; RIBEIRO, C. A. C. Estratificação horizontal da educação superior no Brasil: desigualdades de classe, gênero e raça em um contexto de expansão educacional. **Tempo Social**, v. 31, n. 1, p. 195–233, 2019.
+
+COMIN, A. A.; BARBOSA, R. Trabalhar para estudar: sobre a pertinência da noção de transição escola-trabalho no Brasil. **Novos Estudos CEBRAP**, v. 91, p. 75–95, 2011.
+
+MANÇANO, T.; ALCANTARA, V. Quem faz Iniciação Científica? Um estudo sobre as desigualdades socioeconômicas no acesso à Iniciação Científica FFLCH-USP (2010–2022). Pacote de replicação disponível em: https://github.com/mancano-tales/Quem-faz-IC.
+
+MASSI, L.; QUEIROZ, S. L. **Iniciação científica: aspectos históricos, organizacionais e formativos da atividade no ensino superior brasileiro**. São Paulo: Editora UNESP, 2015.
+
+RIBEIRO, C. A. C.; CARVALHAES, F. Estratificação e mobilidade social no Brasil: uma revisão da literatura na sociologia de 2000 a 2018. p. 1–46, 2020.
+
+SENKEVICS, A. *et al.* Decomposing Heterogeneity in Inequality of Educational Opportunities: Family Income and Academic Performance in Brazilian Higher Education. **Sociological Science**, v. 11, p. 854–885, 2024.
+
+# Ambiente computacional {.unnumbered}
+
+```{r sessao}
+#| code-fold: true
+#| echo: true
+sessionInfo()
+```
