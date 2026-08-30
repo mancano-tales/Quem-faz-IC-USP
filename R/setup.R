@@ -59,6 +59,23 @@ carregar_areas <- function() {
   utils::read.csv(ARQ_AREAS, encoding = "UTF-8")[, c("unidade", "area")]
 }
 
+# Campus de uma unidade, para desambiguar cursos homonimos.
+#
+# O mesmo curso existe em unidades diferentes -- Odontologia em tres faculdades,
+# Medicina Veterinaria em duas. O que as separa e o campus, e nao a sigla: usar
+# abbreviate() sobre o nome da unidade produz strings ilegiveis.
+campus_unidade <- function(unidade) {
+  dplyr::case_when(
+    grepl("Ribeirão Preto", unidade)                    ~ "Ribeirão Preto",
+    grepl("de Bauru", unidade)                          ~ "Bauru",
+    grepl("São Carlos", unidade)                        ~ "São Carlos",
+    grepl("Lorena", unidade)                            ~ "Lorena",
+    grepl("Luiz de Queiroz", unidade)                   ~ "Piracicaba",
+    grepl("Zootecnia e Engenharia de Alimentos", unidade) ~ "Pirassununga",
+    TRUE                                                ~ "São Paulo"
+  )
+}
+
 # Ordem das areas nas tabelas e figuras: da maior para a menor taxa de IC,
 # definida uma vez para que todos os graficos fiquem consistentes.
 ordenar_areas <- function(dados) {
