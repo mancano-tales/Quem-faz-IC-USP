@@ -68,6 +68,12 @@ fflch <- dplyr::filter(usp, unidade == UNIDADE_FFLCH)
 
 pct  <- function(x, a = 0.1) scales::percent(x, accuracy = a, decimal.mark = ",")
 num  <- function(x) format(x, big.mark = ".", decimal.mark = ",")
+
+# Nomes de area por extenso nao cabem em tabelas com muitas colunas.
+abreviar_area <- function(x) {
+  x <- sub("^Ciências ", "C. ", as.character(x))
+  sub("^Linguística, Letras e Artes$", "Letras e Artes", x)
+}
 ```
 
 ::: {.callout-note appearance="simple"}
@@ -259,6 +265,109 @@ rbind(utils::head(ext, 5), utils::tail(ext, 5)) |>
   knitr::kable(align = "llrr")
 ```
 
+## Descendo ao curso
+
+A unidade ainda agrega demais. A Escola Politécnica oferta dezenas de
+engenharias; a FFLCH oferta Letras e Filosofia lado a lado. O curso é a unidade
+em que o estudante de fato vive, e é nele que a desigualdade de oferta aparece
+em toda a sua extensão.
+
+```{r cursos}
+#| label: tbl-cursos
+#| tbl-cap: "Os dez cursos com maior e menor proporção de estudantes que realizaram IC"
+
+MIN_CURSO <- 200
+
+cursos <- usp |>
+  dplyr::group_by(area, unidade, curso) |>
+  dplyr::summarise(n = dplyr::n(), fez_ic = mean(IC), .groups = "drop") |>
+  dplyr::filter(n >= MIN_CURSO) |>
+  dplyr::arrange(dplyr::desc(fez_ic))
+
+# O mesmo nome de curso existe em unidades diferentes -- Odontologia em três
+# faculdades, por exemplo. O rótulo carrega a unidade para não confundi-los.
+cursos <- cursos |>
+  dplyr::group_by(curso) |>
+  dplyr::mutate(rotulo = if (dplyr::n() > 1)
+                  paste0(curso, " — ", campus_unidade(unidade)) else curso) |>
+  dplyr::ungroup()
+
+rbind(utils::head(cursos, 10), utils::tail(cursos, 10)) |>
+  dplyr::transmute(Curso = rotulo, `Área` = abreviar_area(area),
+                   N = num(n), `% que fez IC` = pct(fez_ic)) |>
+  knitr::kable(align = "llrr")
+```
+
+Entre os `r nrow(cursos)` cursos com ao menos `r MIN_CURSO` ingressantes no
+período, a proporção que realiza IC vai de
+`r pct(max(cursos$fez_ic))` a `r pct(min(cursos$fez_ic))` — uma razão de
+`r round(max(cursos$fez_ic) / min(cursos$fez_ic))` vezes entre os extremos.
+
+```{r fig-cursos}
+#| label: fig-cursos
+#| fig-cap: "Proporção que realizou IC em cada curso, agrupada por área (cursos com 200 ingressantes ou mais)"
+#| fig-width: 9
+#| fig-height: 5
+
+cursos |>
+  ggplot2::ggplot(ggplot2::aes(x = area, y = fez_ic)) +
+  ggplot2::geom_boxplot(outlier.shape = NA, colour = "grey65", width = 0.5) +
+  ggplot2::geom_jitter(ggplot2::aes(size = n, colour = area), width = 0.18,
+                       alpha = 0.65, show.legend = FALSE) +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::scale_size_continuous(range = c(0.8, 5), guide = "none") +
+  ggplot2::coord_flip() +
+  ggplot2::labs(x = NULL, y = "Estudantes que realizaram IC, por curso") +
+  TEMA
+```
+
+A dispersão dentro de cada área é da mesma ordem da dispersão entre áreas. Em
+Ciências Exatas e da Terra convivem cursos com mais de 25% e cursos com menos
+de 2%. Em Ciências Sociais Aplicadas, Arquitetura e Urbanismo forma três vezes
+mais iniciantes científicos que os cursos de gestão da mesma área. Falar em
+"área do conhecimento" é, portanto, uma simplificação conveniente para a
+análise, não uma descrição fiel da experiência dos estudantes.
+
+### As licenciaturas
+
+Um padrão organiza boa parte do fundo do ranking.
+
+```{r licenciatura}
+#| label: tbl-licenciatura
+#| tbl-cap: "Acesso à IC segundo o vínculo do estudante com bacharelado e licenciatura"
+#| tbl-pos: "H"
+
+# O nome do curso não identifica o vínculo: a maioria não traz "Bacharelado"
+# nem "Licenciatura" no nome. Os campos de situação do painel marcam a ausência
+# de vínculo com a frase "Não cursa/cursou ...", e não com um valor faltante.
+tem_vinculo <- function(x, ausencia) !is.na(x) & x != ausencia
+
+usp |>
+  dplyr::mutate(
+    bac = tem_vinculo(situ_bacharel,     "Não cursa/cursou bacharelado"),
+    lic = tem_vinculo(situ_licenciatura, "Não cursa/cursou licenciatura"),
+    tipo = dplyr::case_when(
+      bac & lic  ~ "Bacharelado e licenciatura",
+      bac & !lic ~ "Somente bacharelado",
+      !bac & lic ~ "Somente licenciatura",
+      TRUE       ~ "Sem vínculo registrado")) |>
+  dplyr::group_by(tipo) |>
+  dplyr::summarise(N = dplyr::n(), fez_ic = mean(IC), .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(fez_ic)) |>
+  dplyr::transmute(`Vínculo` = tipo, N = num(N),
+                   `% que fez IC` = pct(fez_ic)) |>
+  knitr::kable(align = "lrr")
+```
+
+Estudantes vinculados apenas à licenciatura realizam IC em proporção pouco
+acima da metade da dos vinculados apenas ao bacharelado. A leitura mais
+provável não é de desigualdade, mas de desenho: a licenciatura forma
+professores, e a iniciação científica não faz parte do que se espera dessa
+trajetória. Mas o efeito prático é que uma porta para a pós-graduação está
+estatisticamente mais fechada para quem entrou pela formação docente — e vale
+notar que essa é, na USP, a modalidade com maior concentração de estudantes
+noturnos e trabalhadores.
+
 ## A estrutura institucional contra as características individuais
 
 A amplitude entre unidades sugere que o lugar em que o estudante entra importa.
@@ -427,13 +536,6 @@ destaques <- ames_area |>
   dplyr::mutate(efeito = factor(unname(DESTAQUES[chave]),
                                 levels = unname(DESTAQUES)))
 
-# Com oito colunas numéricas, o nome por extenso das áreas não cabe na largura
-# da página e quebra as colunas de números.
-abreviar <- function(x) {
-  x <- sub("^Ciências ", "C. ", x)
-  sub("^Linguística, Letras e Artes$", "Letras e Artes", x)
-}
-
 tab_het <- destaques |>
   dplyr::mutate(pp = sprintf("%+.1f", 100 * ame)) |>
   dplyr::select(area, n, efeito, pp) |>
@@ -441,7 +543,7 @@ tab_het <- destaques |>
   # A ordem das colunas depois do pivot não é garantida: selecionamos pelos
   # nomes, em vez de confiar na posição e rotular por cima.
   dplyr::select(`Área` = area, N = n, dplyr::all_of(unname(DESTAQUES))) |>
-  dplyr::mutate(`Área` = abreviar(as.character(`Área`)), N = num(N))
+  dplyr::mutate(`Área` = abreviar_area(`Área`), N = num(N))
 
 knitr::kable(tab_het, align = "lrrrrrrrr")
 ```
