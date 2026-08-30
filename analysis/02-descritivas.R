@@ -7,6 +7,7 @@
 
 source(here::here("R", "setup.R"))
 source(here::here("R", "recode.R"))
+source(here::here("R", "modelos.R"))
 
 usp <- arrow::read_parquet(ARQ_PAINEL) |>
   dplyr::filter(ano %in% COORTES) |>
@@ -60,23 +61,55 @@ tab_coortes <- usp |>
 
 writexl::write_xlsx(tab_coortes, file.path(DIR_TABLES, "tab-3-coortes-area.xlsx"))
 
-# Quanto da variacao esta entre areas e quanto esta dentro delas? --------------
-# Um R2 de um modelo so com efeitos fixos de area da a fracao da variacao
-# individual em fazer IC que a area sozinha explica.
+# Estrutura institucional contra caracteristicas individuais -------------------
+#
+# A comparacao precisa de dois cuidados que sao faceis de esquecer, e que
+# invalidariam o resultado se ficassem de fora.
+#
+# O primeiro e a amostra. O modelo individual descarta quem tem resposta
+# faltante no questionario socioeconomico -- cerca de 30% dos casos, que nao
+# faltam ao acaso. Estimar o modelo de unidade na amostra cheia e o individual
+# na reduzida compara duas populacoes diferentes. Aqui os dois rodam na MESMA
+# amostra, a que sobrevive ao descarte.
+#
+# O segundo e o numero de parametros. A unidade entra como 47 dummies; o bloco
+# individual tem 15 termos. O pseudo-R2 de McFadden nao penaliza parametros, e
+# a comparacao crua favoreceria a unidade por construcao. Reportamos entao o
+# McFadden ajustado, que desconta um parametro por termo, e o BIC, que penaliza
+# com severidade.
 
-m_area <- stats::glm(IC ~ area, data = usp, family = stats::binomial)
-m_nulo <- stats::glm(IC ~ 1,    data = usp, family = stats::binomial)
-pseudo_r2_area <- 1 - as.numeric(stats::logLik(m_area) / stats::logLik(m_nulo))
+amostra_comum <- usp |>
+  dplyr::select(dplyr::all_of(VARIAVEIS), unidade, area) |>
+  stats::na.exclude()
 
-m_unid <- stats::glm(IC ~ unidade, data = usp, family = stats::binomial)
-pseudo_r2_unid <- 1 - as.numeric(stats::logLik(m_unid) / stats::logLik(m_nulo))
+nulo <- stats::glm(IC ~ 1, data = amostra_comum, family = stats::binomial)
+
+mcfadden <- function(m) 1 - as.numeric(stats::logLik(m) / stats::logLik(nulo))
+mcfadden_ajustado <- function(m) {
+  1 - (as.numeric(stats::logLik(m)) - length(stats::coef(m))) /
+    as.numeric(stats::logLik(nulo))
+}
+
+blocos <- list(
+  "Área do conhecimento (9 categorias)"   = stats::glm(IC ~ area, data = amostra_comum, family = stats::binomial),
+  "Unidade de ingresso (48 categorias)"   = stats::glm(IC ~ unidade, data = amostra_comum, family = stats::binomial),
+  "Características do estudante"          = ajustar(amostra_comum, FORMULA_BASE)
+)
 
 decomposicao <- data.frame(
-  fonte = c("Área do conhecimento (9 categorias)",
-            "Unidade da USP (48 categorias)"),
-  pseudo_r2 = c(pseudo_r2_area, pseudo_r2_unid)
+  fonte      = names(blocos),
+  parametros = vapply(blocos, function(m) length(stats::coef(m)), numeric(1)),
+  mcfadden   = vapply(blocos, mcfadden, numeric(1)),
+  ajustado   = vapply(blocos, mcfadden_ajustado, numeric(1)),
+  aic        = vapply(blocos, stats::AIC, numeric(1)),
+  bic        = vapply(blocos, stats::BIC, numeric(1)),
+  row.names  = NULL
 )
+
 writexl::write_xlsx(decomposicao, file.path(DIR_TABLES, "tab-4-decomposicao.xlsx"))
+
+pseudo_r2_area <- decomposicao$mcfadden[1]
+pseudo_r2_unid <- decomposicao$mcfadden[2]
 
 # Figuras ----------------------------------------------------------------------
 
