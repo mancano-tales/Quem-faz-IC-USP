@@ -1,0 +1,7 @@
+# Os scripts em inst/legacy/ sao acervo historico, nao fazem parte do pipeline.
+# Suas dependencias (pacman, rio, rstudioapi, cluster) nao entram no renv.lock.
+inst/legacy/
+
+# Saidas geradas
+docs/
+outputs/

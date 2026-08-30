@@ -1,0 +1,17 @@
+# Normaliza finais de linha: LF no repositorio, nativo no working directory.
+* text=auto eol=lf
+
+# Fontes
+*.R      text
+*.qmd    text
+*.md     text
+*.yml    text
+*.Rproj  text
+
+# Binarios: nunca converter, nunca tentar diff textual
+*.xlsx   binary
+*.xls    binary
+*.parquet binary
+*.png    binary
+*.pdf    binary
+*.docx   binary

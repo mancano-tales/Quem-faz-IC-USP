@@ -1,0 +1,23 @@
+# RStudio / R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj.user
+
+# Quarto
+/.quarto/
+*_files/
+*_cache/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+*.tmp
+
+# Saídas voláteis do relatório (o HTML publicado fica em docs/)
+replication-report.html
+
+**/*.quarto_ipynb
