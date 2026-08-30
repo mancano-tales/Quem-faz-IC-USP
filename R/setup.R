@@ -6,7 +6,7 @@
 # ------------------------------------------------------------------------------
 
 .pkgs <- c("here", "dplyr", "tidyr", "readxl", "writexl",
-           "ggplot2", "scales", "arrow", "broom")
+           "ggplot2", "scales", "arrow", "broom", "rlang")
 
 .faltando <- .pkgs[!vapply(.pkgs, requireNamespace, logical(1), quietly = TRUE)]
 if (length(.faltando)) {
