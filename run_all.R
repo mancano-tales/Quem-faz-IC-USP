@@ -17,7 +17,9 @@ etapas <- c(
   "03-modelos.R",
   "04-heterogeneidade.R",
   "05-cursos.R",
-  "06-replica-fflch.R"
+  "06-replica-fflch.R",
+  "07-genero-curso.R",
+  "08-por-ano.R"
 )
 
 inicio_total <- Sys.time()
