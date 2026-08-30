@@ -17,7 +17,7 @@ source(here::here("R", "recode.R"))
 source(here::here("R", "modelos.R"))
 
 usp <- arrow::read_parquet(ARQ_PAINEL) |>
-  dplyr::filter(ano %in% COORTES) |>
+  dplyr::filter(ano %in% COORTES_MODELO) |>
   aplicar_recodificacoes() |>
   dplyr::mutate(IC = dplyr::coalesce(IC, 0)) |>
   dplyr::left_join(carregar_areas(), by = "unidade")

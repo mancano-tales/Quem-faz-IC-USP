@@ -31,9 +31,23 @@ ARQ_PAINEL  <- file.path(DIR_DATA, "ic_usp.parquet")
 ARQ_AREAS   <- file.path(DIR_RAW, "unidades-areas.csv")
 
 # Recorte analitico ------------------------------------------------------------
-# A janela e a mesma do estudo da FFLCH, para que os resultados sejam
-# diretamente comparaveis com os do artigo anterior.
-COORTES       <- 2010:2022
+#
+# Duas janelas, como no estudo da FFLCH, e pela mesma razao.
+#
+# Os dados de IC vao ate 2022. Quem ingressou em 2021 ou 2022 ainda nao teve
+# tempo de comecar uma IC, e aparece como se nao tivesse feito: a coorte de 2022
+# marca 1,8% contra 16,1% da de 2018. Essas coortes estao censuradas a direita, e
+# incluí-las nas descritivas subestima o acesso.
+#
+# As descritivas usam entao 2010-2018, coortes que tiveram ao menos quatro anos
+# para iniciar uma IC dentro da janela observada. O modelo usa 2010-2022, que e
+# a amostra do artigo anterior -- manter a mesma janela e o que torna os
+# coeficientes diretamente comparaveis. A censura nao invalida o modelo, que
+# controla o ano de ingresso, e o efeito de estima-lo nas duas janelas esta
+# reportado no artigo.
+COORTES        <- 2010:2018   # descritivas, sem coortes censuradas
+COORTES_MODELO <- 2010:2022   # modelo, a janela do artigo anterior
+
 UNIDADE_FFLCH <- "Faculdade de Filosofia, Letras e Ciências Humanas"
 
 # Unidades com menos ingressantes do que isto ficam fora das comparacoes por

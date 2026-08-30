@@ -140,7 +140,7 @@ message(sprintf("  pseudo-R2 so com area   : %.3f", pseudo_r2_area))
 message(sprintf("  pseudo-R2 so com unidade: %.3f", pseudo_r2_unid))
 
 stopifnot(
-  "a USP deve ter 152.729 ingressantes nas coortes 2010-2022" = nrow(usp) == 152729,
+  "a USP deve ter 105.803 ingressantes nas coortes 2010-2018" = nrow(usp) == 105803,
   "as 48 unidades devem estar classificadas em 9 areas" =
     dplyr::n_distinct(usp$area) == 9
 )

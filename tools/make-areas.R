@@ -22,8 +22,11 @@
 
 source(here::here("R", "setup.R"))
 
+# A classificacao cobre a janela ampla, e nao a das descritivas: uma unidade que
+# so recebeu ingressantes a partir de 2019 precisa ter area atribuida do mesmo
+# jeito, senao o join do modelo deixa buracos.
 unidades <- arrow::read_parquet(ARQ_PAINEL) |>
-  dplyr::filter(ano %in% COORTES) |>
+  dplyr::filter(ano %in% COORTES_MODELO) |>
   dplyr::count(unidade, name = "n_ingressantes") |>
   dplyr::arrange(dplyr::desc(n_ingressantes))
 
