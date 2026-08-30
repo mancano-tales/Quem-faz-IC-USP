@@ -1,6 +1,6 @@
 ---
 title: "Quem faz Iniciação Científica na USP?"
-subtitle: "Estrutura de oportunidades e desigualdade no acesso à pesquisa de graduação (2010–2022)"
+subtitle: "Estrutura de oportunidades e desigualdade no acesso à pesquisa de graduação (2010–2018)"
 author:
   - name: Tales Mançano
     affiliations:
@@ -78,34 +78,34 @@ abreviar_area <- function(x) {
 
 **RESUMO**
 
-Estudo anterior mostrou que, numa unidade da Universidade de São Paulo, a
-origem social explica pouco o acesso à Iniciação Científica, enquanto a
-necessidade de trabalhar explica muito. Este artigo pergunta se o achado
-descreve a universidade. Estendemos a mesma especificação às 48 unidades da
-USP, com 105.803 ingressantes de 2010 a 2018. Três resultados. A oferta é
-desigual antes de qualquer seleção: a proporção que faz IC vai de 2,7% a 36,1%
-entre unidades, e saber apenas onde o estudante ingressou explica mais da
-variação individual do que todas as suas características socioeconômicas
-somadas. O mecanismo do tempo se confirma e se fortalece: em oito das nove
-áreas o fator dominante é trabalho ou turno noturno. E emerge um efeito de
-gênero ausente na unidade original, que sobrevive ao controle por curso.
+Esta pesquisa investiga como o acesso à Iniciação Científica se distribui entre
+as unidades, áreas e cursos da Universidade de São Paulo, nas coortes que
+ingressaram entre 2010 e 2018. Retomamos uma questão levantada em estudo
+anterior sobre uma unidade da universidade, a das diferenças entre áreas do
+conhecimento, agora com a base que cobre as 48 unidades e 105.803 ingressantes.
+A proporção de estudantes que realizam IC varia de 2,7% a 36,1% entre unidades,
+e conhecer apenas a unidade de ingresso tem poder explicativo maior do que o
+conjunto das características socioeconômicas dos estudantes. Os efeitos do
+vínculo com o trabalho e do turno noturno se mantêm e superam as características
+de origem em seis das nove áreas. Observamos ainda um efeito de sexo ausente na
+unidade estudada anteriormente, que permanece após o controle por curso.
 
 **Palavras-chave:** iniciação científica; desigualdade de oportunidades
 educacionais; estratificação horizontal; educação superior; gênero
 
 **ABSTRACT**
 
-A previous study showed that, in one unit of the University of São Paulo,
-social origin explains little of the access to undergraduate research, while
-the need to work explains much. This article asks whether the finding describes
-the university. We extend the same specification to all 48 units, covering
-105,803 entrants from 2010 to 2018. Three results. Provision is unequal before
-any selection: the share who undertake undergraduate research ranges from 2.7%
-to 36.1% across units, and knowing only where a student enrolled explains more
-individual variation than all their socioeconomic characteristics combined. The
-time mechanism is confirmed and strengthened: in eight of nine fields the
-dominant factor is employment or evening enrolment. And a gender effect absent
-in the original unit emerges, surviving controls for degree programme.
+This article examines how access to undergraduate research is distributed
+across the units, fields and degree programmes of the University of São Paulo,
+for cohorts entering between 2010 and 2018. We return to a question raised in an
+earlier study of a single unit, that of differences between fields of knowledge,
+now drawing on data covering all 48 units and 105,803 entrants. The share of
+students undertaking undergraduate research ranges from 2.7% to 36.1% across
+units, and knowing only the unit of entry has greater explanatory power than the
+full set of students' socioeconomic characteristics. The effects of employment
+and evening enrolment persist and exceed those of social origin in six of the
+nine fields. We also observe a gender effect absent in the unit previously
+studied, which survives controls for degree programme.
 
 **Keywords:** undergraduate research; inequality of educational opportunity;
 horizontal stratification; higher education; gender
@@ -119,32 +119,47 @@ estudo anterior, <https://github.com/mancano-tales/Quem-faz-IC-na-FFLCH>.
 
 ## INTRODUÇÃO
 
-Em estudo anterior, analisamos o acesso à Iniciação Científica (IC) na
-Faculdade de Filosofia, Letras e Ciências Humanas da USP e chegamos a uma
-conclusão que contrariava nossa hipótese inicial: os marcadores tradicionais de
-origem social — renda familiar e escolaridade dos responsáveis — têm pouco
-poder explicativo sobre as chances de fazer IC, enquanto o vínculo com o
-trabalho e a forma de sustento pretendida durante a graduação têm muito.
-Passado o filtro do vestibular, argumentamos, o mecanismo dominante de
-reprodução de desigualdades deixa de ser a origem e passa a ser o tempo: quem
-precisa trabalhar não tem as horas que a pesquisa exige.
+Esta pesquisa investiga como o acesso à Iniciação Científica (IC) se distribui
+entre as unidades, as áreas do conhecimento e os cursos da Universidade de São
+Paulo, tomando as coortes que ingressaram na graduação entre 2010 e 2018.
 
-Aquele estudo analisou uma unidade. Este pergunta se o achado descreve a
-universidade.
+Em trabalho anterior analisamos o perfil dos estudantes da Faculdade de
+Filosofia, Letras e Ciências Humanas que realizaram IC, e encontramos que o
+vínculo com o trabalho e a forma de sustento pretendida durante a graduação
+tinham peso maior sobre as chances de fazer pesquisa do que os marcadores
+tradicionalmente mobilizados pela literatura de desigualdades educacionais,
+como renda familiar e escolaridade dos responsáveis. Naquele texto, em sua
+versão apresentada em seminário, chegamos a levantar a existência de distinções
+entre as áreas do conhecimento, apoiados em Canaan e Nogueira (2015), para quem
+o capital cultural aparece positivamente correlacionado à chance de obter bolsa
+nas humanidades, relação que se inverteria nas demais áreas, possivelmente
+porque a carreira acadêmica não representa nelas a via mais prestigiosa de
+profissionalização. A discussão foi retirada da versão submetida por limite de
+espaço, e os dados de que dispúnhamos, restritos a uma unidade, não permitiriam
+investigá-la de todo modo.
 
-A pergunta não é retórica. A FFLCH é a maior unidade da USP, mas é atípica em
-quase tudo o que interessa ao argumento: concentra cursos noturnos, recebe uma
-proporção de estudantes trabalhadores bem acima da média, e pertence a uma área
-cuja relação com a pesquisa de graduação difere da das ciências experimentais.
-Se o mecanismo do tempo é geral, deve reaparecer em Engenharias e em Ciências
-da Saúde. Se não reaparece, o que descrevemos não foi a educação superior
-brasileira, mas um tipo particular de faculdade.
+A base de dados obtida junto ao Serviço de Informação ao Cidadão da USP, no
+entanto, cobre a universidade inteira: são 48 unidades e 139 cursos de
+graduação, com informação socioeconômica de ingressantes e registro dos
+projetos de IC. É essa possibilidade que retomamos aqui.
 
-Ao estender a análise, encontramos algo que o recorte de uma unidade mantinha
-necessariamente constante e que se revelou maior que tudo o que estávamos
-medindo: a desigualdade da própria oferta. Organizamos o artigo em torno de
-três perguntas — quanta IC existe e onde; se a especificação anterior se
-sustenta na universidade; e se o mecanismo é o mesmo em todas as áreas.
+Ao analisar a distribuição do acesso nessa escala, encontramos algo que o
+recorte de uma unidade mantinha necessariamente constante. A variação na
+proporção de estudantes que realizam IC entre as unidades da universidade é
+grande, vai de 2,7% a 36,1%, e supera em poder explicativo o conjunto das
+características socioeconômicas dos estudantes. A oferta de oportunidades de
+pesquisa na graduação aparece, assim, como uma dimensão da desigualdade que
+antecede a seleção de quem as ocupa, e que a literatura da área tem tratado
+mais como contexto do que como objeto de medida.
+
+Na seção seguinte situamos a IC na literatura sobre estratificação educacional,
+com atenção à vertente que trata da diferenciação horizontal no interior da
+educação superior. Em seguida descrevemos os dados, o recorte adotado e as
+escolhas metodológicas. Na terceira seção apresentamos a distribuição do acesso
+por área, unidade e curso, e a comparação entre o poder explicativo da estrutura
+institucional e o das características individuais. Na quarta seção aplicamos à
+universidade a especificação do estudo anterior e a estimamos separadamente em
+cada área. Encerramos com uma seção de robustez e as considerações finais.
 
 ## INICIAÇÃO CIENTÍFICA E ESTRUTURA DE OPORTUNIDADES
 
@@ -173,25 +188,25 @@ diploma, e que funciona como credencial de entrada na pós-graduação (Canaan e
 Nogueira, 2015:63). Perguntar quem faz IC é perguntar por diferenciação
 qualitativa no interior da educação superior pública.
 
-### A oferta como variável, e não como cenário
+### A medida da estrutura de oportunidades
 
-Há uma assimetria no modo como a estratificação horizontal costuma ser
-operacionalizada. Ela é quase sempre tratada como resultado de *seleção*:
-estudantes de origens diferentes se distribuem desigualmente entre cursos e
-instituições, e é essa distribuição que produz destinos desiguais. A oferta
-entra como o cenário em que a seleção acontece, não como objeto de medida.
+A literatura sobre estratificação horizontal costuma operacionalizar a
+distribuição desigual entre cursos e instituições como resultado de seleção:
+estudantes de origens sociais distintas se alocam de maneira desigual entre as
+opções disponíveis, e é essa alocação que produz destinos desiguais. A oferta
+comparece nessa formulação sobretudo como o contexto em que a seleção ocorre.
 
-Este artigo inverte a ordem. Ao estimar quanto da variação individual em fazer
-IC é explicado apenas por saber em que unidade o estudante ingressou, tratamos
-a estrutura de oportunidades como uma quantidade a ser medida e comparada com o
-efeito das características individuais. A pergunta deixa de ser somente "quem
-consegue o recurso?" e passa a incluir "onde o recurso existe?".
+Neste artigo procuramos tratá-la como quantidade. Estimamos quanto da variação
+individual na realização de IC é explicado apenas por saber em que unidade o
+estudante ingressou, e comparamos esse valor com o poder explicativo do
+conjunto de suas características socioeconômicas. A pergunta usual, sobre quem
+consegue o recurso, passa a ser acompanhada de outra, sobre onde o recurso
+existe em maior quantidade.
 
-A distinção tem consequência prática. Se a oferta é o que domina, uma política
-de equidade que atue apenas sobre o perfil dos beneficiários — critérios
-socioeconômicos na seleção de bolsistas — opera sobre a menor das duas fontes
-de variação, enquanto a maior permanece intocada porque nunca foi enquadrada
-como desigualdade.
+A distinção tem consequência para a discussão de políticas. Caso a oferta
+responda pela maior parte da variação, iniciativas de equidade que atuem apenas
+sobre o perfil dos beneficiários, como critérios socioeconômicos na seleção de
+bolsistas, estariam operando sobre a menor das duas fontes envolvidas.
 
 ### O tempo como mecanismo
 
@@ -266,12 +281,12 @@ Ciências Humanas, como a USP a classifica.
 
 ### Efeitos marginais médios
 
-Comparamos efeitos marginais médios, e não coeficientes. Coeficientes
-logísticos de variáveis em escalas diferentes — salários mínimos, anos de
-idade, categorias de trabalho — não são comparáveis entre si; o efeito marginal
-médio põe todos em pontos percentuais na probabilidade de fazer IC, que é a
-unidade em que a pergunta "o trabalho continua sendo o maior efeito?" tem
-resposta. Os intervalos de confiança vêm do método delta aplicado à matriz de
+Optamos por comparar efeitos marginais médios em lugar dos coeficientes.
+Coeficientes logísticos de variáveis medidas em escalas distintas, como
+salários mínimos, anos de idade e categorias de vínculo com o trabalho, não são
+comparáveis entre si. O efeito marginal médio exprime todos em pontos
+percentuais na probabilidade de realizar IC, que é a unidade em que a pergunta
+sobre qual fator pesa mais admite resposta. Os intervalos de confiança vêm do método delta aplicado à matriz de
 covariância do modelo.
 
 ## QUANTA IC EXISTE, E ONDE
@@ -484,9 +499,10 @@ partindo de patamares que estavam entre os mais altos da universidade. Ciências
 da Saúde lidera o ranking do período, mas por unidades que se moveram em
 direções contrárias.
 
-Esse é o tipo de variação que uma leitura agregada não recupera, e que reforça
-o argumento central: a oferta de IC é uma decisão institucional — de unidades e
-de seus programas de bolsas — e não o agregado de escolhas individuais.
+Trata-se de variação que uma leitura agregada não recupera, e que converge com
+o argumento desenvolvido na seção anterior. A oferta de IC responde a decisões
+institucionais, tomadas no âmbito das unidades e de seus programas de bolsas,
+cujo resultado agregado não se confunde com a soma das escolhas dos estudantes.
 
 ### A estrutura institucional contra as características individuais
 
@@ -532,14 +548,21 @@ data.frame(
 
 Fonte: elaboração própria a partir de dados do SIC-USP. N = `r num(nrow(amostra_comum))`.
 
-O resultado é desconfortável para a literatura de desigualdade de oportunidades
-educacionais, inclusive para o nosso estudo anterior. **Saber apenas em qual
-das 48 unidades o estudante ingressou explica mais da variação individual em
-fazer IC do que saber sua renda, raça, escolaridade dos pais, idade, turno,
-vínculo com trabalho e forma de sustento, todos juntos** — e a conclusão
-sobrevive à penalização por parâmetros, inclusive ao BIC. A oferta desigual de
-oportunidades entre unidades é um fato estrutural que antecede, e supera, a
-seleção de quem as ocupa.
+Nossa expectativa era a de que as características socioeconômicas dos
+estudantes continuassem organizando o acesso à IC na universidade inteira, como
+havíamos encontrado na FFLCH, e que a unidade de ingresso funcionasse apenas
+como contexto dessa distribuição. A Tabela 5 indica o contrário. Um modelo que
+conhece apenas a unidade de ingresso alcança pseudo-R² de 0,079, contra 0,057
+de um modelo que conhece apenas as características do estudante, e a diferença
+se mantém sob o critério BIC, que penaliza com severidade os 47 parâmetros da
+unidade.
+
+Esse resultado chama atenção para a dimensão institucional do acesso a
+oportunidades de pesquisa na graduação. A distribuição desigual da IC entre as
+unidades não decorre somente do perfil dos estudantes que cada uma recebe, mas
+de diferenças na oferta que antecedem esse perfil. Uma leitura que se concentre
+nos atributos dos indivíduos, como a que fizemos no estudo anterior, estará
+descrevendo a menor das duas fontes de variação envolvidas.
 
 ## A ESPECIFICAÇÃO ANTERIOR APLICADA À USP
 
@@ -577,29 +600,32 @@ dplyr::full_join(juntar(a_fflch, "FFLCH"), juntar(a_usp, "USP"), by = "termo") |
 
 Fonte: elaboração própria a partir de dados do SIC-USP. FFLCH: N = `r num(stats::nobs(m_fflch))`; USP: N = `r num(stats::nobs(m_usp))`.
 
-Três leituras.
+A comparação sugere três leituras.
 
-**O mecanismo do trabalho se confirma e se fortalece.** Trabalhar em tempo
-integral ao prestar o vestibular reduz a probabilidade de fazer IC em
+A primeira é que o peso do trabalho se mantém na universidade e é maior do que
+o observado na unidade. Trabalhar em tempo integral ao prestar o vestibular
+reduz a probabilidade de realizar IC em
 `r sprintf("%.2f", -100 * a_usp$ame[grepl("integral", a_usp$nivel)])` pontos
 percentuais na USP, contra
 `r sprintf("%.2f", -100 * a_fflch$ame[grepl("integral", a_fflch$nivel)])` na
-FFLCH. Sustentar-se por conta própria e estudar à noite seguem na mesma
-direção, com efeitos maiores. O argumento central do estudo anterior não era um
-artefato da unidade analisada.
+FFLCH, e os efeitos de sustentar-se por conta própria e de estudar no período
+noturno acompanham essa direção, também com magnitude maior. O achado do
+estudo anterior não parece ter sido produzido pelas particularidades da unidade
+analisada.
 
-**As características de origem seguem fracas, e a escolaridade dos pais não é
-distinguível de zero.** Renda per capita e raça mantêm efeitos pequenos. A
-escolaridade do responsável, que na FFLCH aparecia com sinal positivo, na USP
-tem intervalo de confiança que cruza o zero em ambos os níveis — não há
-evidência de efeito, em nenhuma direção.
+A segunda é que as características de origem seguem com efeitos pequenos, e a
+escolaridade dos responsáveis não se distingue de zero. Renda per capita e raça
+mantêm coeficientes modestos. A escolaridade do responsável, que na FFLCH
+aparecia com sinal positivo, tem na USP intervalo de confiança que cruza o zero
+nos dois níveis, de modo que não há evidência de efeito em nenhuma direção.
 
-**O sexo, invisível na FFLCH, aparece na USP.** Na FFLCH o efeito de ser homem
-é `r sprintf("%.2f", 100 * a_fflch$ame[a_fflch$nivel == "M (vs F)"])` ponto
-percentual, com intervalo cruzando o zero. Na USP é
-`r sprintf("%.2f", 100 * a_usp$ame[a_usp$nivel == "M (vs F)"])` pontos, longe
-do zero. Como o modelo já inclui efeitos fixos de área, não se trata de homens
-estarem concentrados em áreas com pouca IC.
+A terceira diz respeito ao sexo, que na FFLCH não se distinguia de zero
+(`r sprintf("%.2f", 100 * a_fflch$ame[a_fflch$nivel == "M (vs F)"])` ponto
+percentual, com intervalo cruzando o zero) e na USP alcança
+`r sprintf("%.2f", 100 * a_usp$ame[a_usp$nivel == "M (vs F)"])` pontos. Como o
+modelo inclui efeitos fixos de área, o resultado não decorre de homens estarem
+concentrados em áreas com menor oferta de IC. Voltamos a ele adiante, com um
+controle mais exigente.
 
 ```{r figs-densidade}
 #| label: fig-densidade
@@ -732,7 +758,7 @@ maiores |>
 
 Fonte: elaboração própria a partir de dados do SIC-USP. Considerados apenas efeitos com p < 0,05; excluídos o ano de ingresso e a categoria residual do sustento.
 
-A resposta tem duas partes.
+Os resultados sugerem duas leituras que convém separar.
 
 ```{r confronto}
 #| label: fig-confronto
@@ -763,30 +789,32 @@ conf |>
 
 Fonte: elaboração própria a partir de dados do SIC-USP.
 
-**A primeira parte confirma o estudo anterior.** O trabalho supera a maior das
-características de origem em `r sum(conf$trabalho > conf$origem)` das
-`r nrow(conf)` áreas. A hierarquia encontrada na FFLCH não é peculiaridade
-daquela unidade.
+A primeira é convergente com o estudo anterior. O efeito de trabalhar em tempo
+integral supera a maior das características de origem em
+`r sum(conf$trabalho > conf$origem)` das `r nrow(conf)` áreas, de modo que a
+hierarquia encontrada na FFLCH não parece ser peculiaridade daquela unidade.
 
-**A segunda a qualifica.** Trabalhar em tempo integral é o fator de maior
-efeito em apenas `r sum(maiores$variavel == "trabalho")` das
-`r nrow(maiores)` áreas. Nas demais, quem carrega o mecanismo é o período
-noturno (`r sum(maiores$variavel == "periodo")` áreas) ou o sexo
-(`r sum(maiores$variavel == "sexo")` áreas).
-
-O período noturno é, plausivelmente, a mesma restrição por outro nome: quem
-trabalha se matricula à noite, e o turno capta a restrição de tempo de forma
-mais completa que uma pergunta respondida ainda no vestibular. A leitura do
-estudo anterior se sustenta com folga.
+A segunda a qualifica. Trabalhar em tempo integral é o fator de maior efeito em
+apenas `r sum(maiores$variavel == "trabalho")` das `r nrow(maiores)` áreas; nas
+demais, o maior efeito é o do período noturno
+(`r sum(maiores$variavel == "periodo")` áreas) ou o do sexo
+(`r sum(maiores$variavel == "sexo")` áreas). Cabe considerar, no entanto, que o
+turno noturno provavelmente capta a mesma restrição por outra via, já que o
+estudante que trabalha tende a se matricular à noite, e a variável de turno
+registra a condição ao longo do curso, enquanto a pergunta sobre atividade
+remunerada foi respondida no momento do vestibular. Lidas em conjunto, as duas
+medidas indicam que a disponibilidade de tempo é o fator dominante em oito das
+nove áreas.
 
 ### O efeito de gênero sobrevive ao curso?
 
-O sexo é outra história, e exige um teste que o desenho por área não fornece.
-Área não é curso: em Ciências da Saúde convivem Enfermagem e Medicina; em
-Agrárias, Veterinária e Zootecnia — com composições de sexo e taxas de IC bem
-diferentes. Parte do efeito pode ser composição de curso, isto é, segregação
-horizontal no sentido de Carvalhaes e Ribeiro (2019), e não um fenômeno interno
-aos cursos.
+O efeito de sexo exige um teste que o desenho por área não fornece. Uma área
+abriga dezenas de cursos com composições de sexo e taxas de IC bastante
+distintas: em Ciências da Saúde convivem Enfermagem e Medicina, e em Ciências
+Agrárias, Veterinária e Zootecnia. Parte do que estamos atribuindo ao sexo pode
+ser, portanto, composição de curso, isto é, a segregação horizontal descrita
+por Carvalhaes e Ribeiro (2019), e não um fenômeno que se passe no interior dos
+cursos.
 
 ```{r genero-curso}
 #| label: tbl-genero
@@ -829,10 +857,10 @@ genero |>
 
 Fonte: elaboração própria a partir de dados do SIC-USP.
 
-O controle importa e não elimina o efeito. Em Ciências da Saúde e em Ciências
-Agrárias, cerca de um terço do efeito de gênero é composição de curso; os dois
-terços restantes permanecem, com intervalos de confiança distantes do zero. Em
-Engenharias, quase nada muda. O efeito segue significativo em
+O controle altera as magnitudes sem eliminar o efeito. Em Ciências da Saúde e
+em Ciências Agrárias, cerca de um terço do efeito de gênero corresponde a
+composição de curso, e os dois terços restantes permanecem, com intervalos de
+confiança distantes do zero. Em Engenharias a mudança é pequena. O efeito segue significativo em
 `r sum(genero$p < 0.05)` das `r nrow(genero)` áreas, e é nulo justamente em
 Ciências Humanas — o que reconcilia o resultado com o do estudo anterior, que
 não encontrou efeito de sexo na FFLCH.
@@ -878,44 +906,46 @@ ainda maior do que a que reportamos.
 
 ## CONSIDERAÇÕES FINAIS
 
-Estendemos à USP inteira um modelo construído para uma de suas unidades, e as
-três respostas não são as que esperávamos.
+Retomamos aqui uma questão que havia sido formulada no percurso do estudo
+anterior e ficara sem tratamento, a das diferenças entre áreas do conhecimento,
+e o fizemos com a base que cobre a universidade inteira. Três resultados
+merecem registro.
 
-A primeira é que a heterogeneidade da oferta supera tudo o que estávamos
-medindo. A proporção que faz IC vai de 2,7% a 36,1% entre unidades e de 45,4% a
-0,8% entre cursos, e a unidade de ingresso, sozinha, explica mais da variação
-individual do que o conjunto das características socioeconômicas — inclusive
-sob penalização por parâmetros. Um estudo de desigualdade de oportunidades
-educacionais que olhe apenas para os atributos dos indivíduos está medindo a
-menor das duas fontes de variação. A literatura de estratificação horizontal
-trata a distribuição desigual entre cursos e instituições como resultado de
-seleção (Gerber e Cheung, 2008; Carvalhaes e Ribeiro, 2019); o que medimos
-sugere que, no caso da IC, a estrutura pesa mais que a seleção. Isso não
-contradiz aquela literatura, mas desloca a pergunta: antes de perguntar quem
-consegue o recurso, é preciso perguntar onde ele existe.
+O primeiro é a magnitude da heterogeneidade da oferta. A proporção de
+estudantes que realizam IC varia de 2,7% a 36,1% entre as unidades e de 45,4% a
+0,8% entre os cursos, e a unidade de ingresso, isoladamente, tem poder
+explicativo maior do que o conjunto das características socioeconômicas,
+inclusive sob penalização por número de parâmetros. A literatura sobre
+estratificação horizontal tem tratado a distribuição desigual entre cursos e
+instituições sobretudo como produto de seleção (Gerber e Cheung, 2008;
+Carvalhaes e Ribeiro, 2019); nossos dados sugerem que, no caso específico da
+IC, a estrutura de oferta responda por parcela maior da variação do que a
+alocação dos estudantes entre as opções disponíveis. O achado não contradiz
+aquela literatura, mas indica que a pergunta sobre quem obtém o recurso
+convém ser precedida de outra, sobre onde ele é ofertado.
 
-A segunda é que o mecanismo do tempo se confirma e se fortalece. Na USP inteira
-os efeitos de trabalhar, de se sustentar sozinho e de estudar à noite são
-maiores que na FFLCH, e superam as características de origem em seis das nove
-áreas. Em oito das nove, o fator dominante é alguma medida de disponibilidade
-de tempo. O achado do estudo anterior generaliza.
+O segundo é que o peso da disponibilidade de tempo se mantém na universidade e
+é maior do que o observado na FFLCH. Os efeitos de trabalhar, de se sustentar
+por conta própria e de estudar no período noturno superam as características de
+origem em seis das nove áreas, e em oito das nove o fator de maior efeito é
+alguma medida de tempo disponível.
 
-A terceira é que apareceu o que não estávamos procurando. O sexo, irrelevante
-na FFLCH, é o maior efeito em quatro áreas, sempre na mesma direção, e
-sobrevive ao controle por curso — não é apenas segregação entre carreiras. Um
-estudo desenhado para testar a origem social encontrou um padrão de gênero que
-não sabe explicar.
+O terceiro não estava previsto no desenho. O sexo, cujo efeito na FFLCH não se
+distinguia de zero, é o maior efeito em quatro áreas, sempre na mesma direção,
+e permanece após o controle por curso, o que afasta a leitura de que se trate
+apenas de segregação entre carreiras. Não dispomos de elementos para explicá-lo,
+e o registramos como questão a ser investigada.
 
-Três limitações pesam sobre essas conclusões. **Não há indicador de desempenho
-acadêmico**, e a classificação na carreira no vestibular é um proxy pobre,
+Três limitações pesam sobre essas conclusões. Não há indicador de desempenho
+acadêmico, e a classificação na carreira no vestibular é um proxy pobre,
 sobretudo ao comparar áreas cujos processos seletivos têm concorrências muito
-diferentes. **O sub-registro de bolsas fora do CNPq no sistema Atena não é
-uniforme entre áreas**: se as unidades das ciências experimentais registram
+diferentes. O sub-registro de bolsas fora do CNPq no sistema Atena não é
+uniforme entre áreas: se as unidades das ciências experimentais registram
 melhor suas bolsas da FAPESP do que as de humanidades, parte da diferença que
 atribuímos à área é diferença de registro — e o ranking de áreas é a espinha
 dorsal do artigo. Não temos como quantificar esse viés com os dados
 disponíveis, e ele é a primeira coisa que um estudo seguinte deveria enfrentar.
-**A classificação das unidades em áreas é nossa**, e ainda que registrada de
+A classificação das unidades em áreas é nossa, e ainda que registrada de
 forma auditável, é uma escolha que outro pesquisador poderia fazer diferente.
 
 ## REFERÊNCIAS
