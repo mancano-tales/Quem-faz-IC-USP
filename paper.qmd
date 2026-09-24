@@ -31,7 +31,7 @@ format:
     documentclass: article
     papersize: a4
     fontsize: 12pt
-    mainfont: "Times New Roman"
+    mainfont: "TeX Gyre Termes"
     geometry:
       - margin=2.5cm
     linestretch: 1.5
